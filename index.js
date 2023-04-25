@@ -12,9 +12,18 @@ const server = http.createServer((req, res) => {
   res.end('Hello World');
 });
 
+const book = {
+  title: 'Thiên kim là lão đại toàn năng',
+  author: 'Khanh Thiển',
+  startChapterIndex: 484,
+  endChapterIndex: 834,
+  url: 'https://ntruyen.vn/truyen/that-thien-kim-la-toan-nang-dai-lao-34879/5537887.html',
+  outputName: 'thien-kim-toan-nang'
+}
 // const url = 'https://ztruyen.vn/truyen/nghich-thien-than-phi-toi-thuong-39863/9451288'
-const url = 'https://truyenyy.vip/truyen/that-thien-kim-nang-la-toan-nang-dai-lao/chuong-454.html'
-readContentFunc.sendRequest(url)
+
+const htmlContent = readContentFunc.sendRequest(book.url)
+readContentFunc.generateEpub(book.title, book.outputName, htmlContent, book.author)
 
 server.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
