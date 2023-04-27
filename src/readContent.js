@@ -1,6 +1,6 @@
 const axios = require('axios');
-const jsdom = require("jsdom");
 
+const POST_FIX_URL = '.html'
 // interface epubChapter {
 //   title: String,
 //   data: String
@@ -13,25 +13,60 @@ const jsdom = require("jsdom");
 //   content: epubChapter[]
 // }
 
-const sendRequest = () => {
-  axios
-  .get(url)
-  .then(res => {
-    if (res.status === 200 && res.data) {
-      htmlRaw = res.data
-      var dom = new jsdom.JSDOM(htmlRaw)
-      return dom
-    }
-  })
-  .catch(error => {
-    console.error(error);
-  });
+const getChapterInfo = (htmlRaw, searchStartStr, endStartString) => {
+  const startIndexToSubstring = htmlRaw.indexOf(searchStartStr)
+  const endIndexToSubstring = htmlRaw.indexOf(endStartString)
+  const chapterInfo = htmlRaw.substring(startIndexToSubstring, endIndexToSubstring - 1)
+  return chapterInfo
 }
 
-const generateEpub = (title, outputName, htmlContent, author = '') => {
-  const bookTitle = title
-  const bookAuthor = author
+const getChapterContent = (chapterInfo, searchStartStr, endStartString) => {
+  const chapterContent = chapterInfo.substring(
+    chapterInfo.indexOf(searchStartStr) + searchStartStr.length,
+    chapterInfo.indexOf(endStartString),
+  )
+  return chapterContent
 }
 
-module.exports = { sendRequest, generateEpub }
-// history_chapter=%7B%2239863%22%3A%7B%22story_id%22%3A%2239863%22%2C%22chapter_id%22%3A%229451288%22%2C%22chapter_name%22%3A%22Ch%5Cu01b0%5Cu01a1ng%20162%22%7D%7D; Path=/; Expires=Wed, 13 Feb 2075 08:28:28 GMT;
+const getPrefixUrl = (url) => {
+  const lastIndexOfSlash = url.lastIndexOf('/')
+  const prefixUrl = url.substring(0, lastIndexOfSlash + 1)
+  return prefixUrl
+}
+
+const getUrlByChapter = (url, chapterNo) => {
+  const prefixUrl = getPrefixUrl(url)
+  const finalUrl = prefixUrl + chapterNo + POST_FIX_URL
+  return finalUrl
+}
+
+const generateEpub = async (url, startChapter, endChapter) => {
+  const allChapters = []
+  for (i = startChapter; i <= endChapter; i++) {
+    const finalUrl = getUrlByChapter(url, i)
+
+  await axios
+    .get(finalUrl)
+    .then(res => {
+      if (res.status === 200 && res.data) {
+        htmlRaw = res.data
+        const chapterInfo = getChapterInfo(htmlRaw, '<div class="chapter-infos">', '<div class="chapter-direction bot">')
+        const chapterContent = getChapterContent(chapterInfo, '<div id="chapter-content">', ' </div>')
+        const chapterHeader = getChapterContent(chapterInfo, '<h1>', '</h1>')
+  
+        const chapter = {
+          title: chapterHeader,
+          data: chapterContent
+        }
+        allChapters.push(chapter)
+      }
+    })
+    .catch(error => {
+      console.error(error);
+    });
+  }
+
+  return allChapters
+}
+
+module.exports = { generateEpub }

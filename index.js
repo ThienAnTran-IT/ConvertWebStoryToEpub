@@ -2,6 +2,7 @@
 
 const http = require('http');
 const readContentFunc = require('./src/readContent')
+const epub = require('epub-gen');
 
 const hostname = '127.0.0.1';
 const port = 3000;
@@ -15,15 +16,25 @@ const server = http.createServer((req, res) => {
 const book = {
   title: 'Thiên kim là lão đại toàn năng',
   author: 'Khanh Thiển',
-  startChapterIndex: 484,
-  endChapterIndex: 834,
-  url: 'https://ntruyen.vn/truyen/that-thien-kim-la-toan-nang-dai-lao-34879/5537887.html',
-  outputName: 'thien-kim-toan-nang'
+  startChapter: 5537944,
+  endChapter: 5538008,
+  url: 'https://ntruyen.vn/truyen/that-thien-kim-la-toan-nang-dai-lao-34879/5537943.html',
+  outputName: './thien-kim-toan-nang.epub',
+  postFixType: '.epub'
 }
 // const url = 'https://ztruyen.vn/truyen/nghich-thien-than-phi-toi-thuong-39863/9451288'
 
-const htmlContent = readContentFunc.sendRequest(book.url)
-readContentFunc.generateEpub(book.title, book.outputName, htmlContent, book.author)
+const finalizeEpub = async () => {
+  const myBookChapters = await readContentFunc.generateEpub(book.url, book.startChapter, book.endChapter)
+  const myBook = {
+    title: book.title,
+    author: book.author,
+    output: book.outputName,
+    content: myBookChapters
+  }
+  new epub(myBook).promise.then(() => console.log('An Done'));
+}
+finalizeEpub()
 
 server.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
