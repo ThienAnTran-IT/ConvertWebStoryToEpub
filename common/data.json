@@ -1,0 +1,36 @@
+[
+  {
+    "url": "https://ntruyen.vn/truyen/that-thien-kim-la-toan-nang-dai-lao-34879/5537943.html",
+    "optionalPrefixChapInUrl": "",
+    "postFixUrl": ".html",
+    "chapterInfoClass": {
+      "start": '<div class="chapter-infos">',
+      "end": '<div class="chapter-direction bot">'
+    },
+    "chapterContentClass": {
+      "start": '<div id="chapter-content">',
+      "end": ' </div>'
+    },
+    "chapterHeaderClass": {
+      "start": '<h1>',
+      "end": '</h1>'
+    }
+  },
+  {
+    "url": "'https://truyenfull.com/ba-lan-di-thi-thai-tu-phi/chuong-1.html",
+    "optionalPrefixChapInUrl": "chuong-",
+    "postFixUrl": ".html",
+    "chapterInfoClass": {
+      "start": '<div class="chapter-infos">',
+      "end": '<div class="chapter-direction bot">'
+    },
+    "chapterContentClass": {
+      "start": '<div id="chapter-content">',
+      "end": ' </div>'
+    },
+    "chapterHeaderClass": {
+      "start": '<h1>',
+      "end": '</h1>'
+    }
+  }
+]

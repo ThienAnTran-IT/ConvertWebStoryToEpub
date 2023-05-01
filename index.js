@@ -16,8 +16,8 @@ const server = http.createServer((req, res) => {
 const book = {
   title: 'Thiên kim là lão đại toàn năng',
   author: 'Khanh Thiển',
-  startChapter: 5537944,
-  endChapter: 5538008,
+  startChapter: 5537943,
+  endChapter: 5537945,
   url: 'https://ntruyen.vn/truyen/that-thien-kim-la-toan-nang-dai-lao-34879/5537943.html',
   outputName: './thien-kim-toan-nang.epub',
   postFixType: '.epub'

@@ -1,6 +1,7 @@
 const axios = require('axios');
 
 const POST_FIX_URL = '.html'
+const OPTIONAL_PRE_FIX_CHAP_IN_URL = ''
 // interface epubChapter {
 //   title: String,
 //   data: String
@@ -29,24 +30,20 @@ const getChapterContent = (chapterInfo, searchStartStr, endStartString) => {
 }
 
 const getPrefixUrl = (url) => {
-  const lastIndexOfSlash = url.lastIndexOf('/')
-  const prefixUrl = url.substring(0, lastIndexOfSlash + 1)
+  const indexOfLastSlash = url.lastIndexOf('/')
+  const prefixUrl = url.substring(0, indexOfLastSlash + 1)
   return prefixUrl
 }
 
 const getUrlByChapter = (url, chapterNo) => {
   const prefixUrl = getPrefixUrl(url)
-  const finalUrl = prefixUrl + chapterNo + POST_FIX_URL
+  const finalUrl = prefixUrl + OPTIONAL_PRE_FIX_CHAP_IN_URL + chapterNo + POST_FIX_URL
   return finalUrl
 }
 
-const generateEpub = async (url, startChapter, endChapter) => {
-  const allChapters = []
-  for (i = startChapter; i <= endChapter; i++) {
-    const finalUrl = getUrlByChapter(url, i)
-
-  await axios
-    .get(finalUrl)
+const getHtmlContentPerChapter = async (url) => {
+  return await axios
+    .get(url)
     .then(res => {
       if (res.status === 200 && res.data) {
         htmlRaw = res.data
@@ -58,12 +55,20 @@ const generateEpub = async (url, startChapter, endChapter) => {
           title: chapterHeader,
           data: chapterContent
         }
-        allChapters.push(chapter)
+        return chapter
       }
     })
     .catch(error => {
-      console.error(error);
-    });
+      console.error(error)
+    })
+}
+
+const generateEpub = async (url, startChapter, endChapter) => {
+  const allChapters = []
+  for (i = startChapter; i <= endChapter; i++) {
+    const finalUrl = getUrlByChapter(url, i)
+    const singleChapter = await getHtmlContentPerChapter(finalUrl)
+    allChapters.push(singleChapter)
   }
 
   return allChapters
