@@ -5,15 +5,24 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "clean": "rm -rf build built-tsoa/Users/antran/Documents/Skedulo/repositories/ewe/form-builder-backend/form-builder-backend/tsconfig.json",
+    "build": "yarn clean && yarn build-tsoa && tsc -b tsconfig.json",
+    "start": "npx tsc && node build/index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/epub-gen": "^0.1.2",
     "axios": "^0.27.2",
     "epub-gen": "^0.1.0",
     "http": "^0.0.1-security",
-    "jsdom": "^21.1.1",
-    "ts-node": "^10.9.1"
+    "jsdom": "^24.1.1",
+    "ts-node": "^10.9.2",
+    "tsoa": "^6.4.0",
+    "typescript": "^5.5.4"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^21.1.7",
+    "@types/node": "^22.5.1"
   }
 }
