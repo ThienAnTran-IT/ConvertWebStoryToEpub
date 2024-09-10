@@ -287,7 +287,7 @@ const finalizeEpub = async () => {
 
   const myBook = {
     title: myBookChapters.storyTitle ?? book.title,
-    author: book.author,
+    author: myBookChapters.author,
     output: myBookChapters.outputStoryName ?? 'Default story name',
     content: myBookChapters.chapters
   }

@@ -1,17 +1,12 @@
-// const axios = require('axios');
-// const jsdom = require("jsdom");
 import axios from 'axios'
 import { JSDOM } from 'jsdom'
 import {
   STORY_TITLE_CLASSNAME,
   CHAPTER_CONTENT_CLASSNAME,
-  CHAPTER_TITLE_CLASSNAME,
-  TRUYENFULL_IO_HOST,
-  TRUYENF_COM_HOST
-} from "./hosts/truyenfull/constants"
-import { ITruyenFullChapter } from "./hosts/truyenfull/types"
-
-const POST_FIX_URL = '.html'
+  CHAPTER_TITLE_CLASSNAME
+} from './hosts/truyenfull/constants'
+import { ITruyenFullChapter } from './hosts/truyenfull/types'
+import { extractStoryInforFromUrl, getChapterUrl } from './utils'
 
 // const generateEpub = async (url, chaptersNo) => {
 //   const allChapters = []
@@ -59,71 +54,22 @@ const getChapperContentInTruyenFull = (dom: Document) => {
   return dom.getElementsByClassName(CHAPTER_CONTENT_CLASSNAME)[0].textContent?.replace(/\n/g, "<br />");
 }
 
-// const generateEpubTruyenFull = async (url, startChapter, endChapter, storyNameInUrl) => {
-//   if (startChapter > endChapter) {
-//     return "Invalid start chapter number and end chapter number"
-//   }
-//   const allChapters = []
-//   let storyTitle = undefined
-//   // for (j = startChapter; j < endChapter; j++) {
-//     // const startChap = chaptersNo[j].startChapter
-//     // const endChap = chaptersNo[j].endChapter
-    
-//     for (i = startChapter; i <= endChapter; i++) {
-//       // const finalUrl = getUrlByChapter(url, i)
-//       const finalUrl = url + i + POST_FIX_URL // https://truyenf.com
-//       // const finalUrl = url + i   // https://truyenfull.io
-    
-//       console.log('------------- finalUrl: ', finalUrl)
-//     await axios
-//       .get(finalUrl)
-//       .then(res => {
-//         if (res.status === 200 && res.data) {
-//           htmlRaw = res.data.replaceAll(/<br\s*[\/]?>/gi, "\n")
-//           const dom = new jsdom.JSDOM(htmlRaw).window.document
-//           storyTitle = getStoryTitleInTruyenFull(dom)
-//           const chapterTitle = getChapperTitleInTruyenFull(dom)
-//           const chapterContent = getChapperContentInTruyenFull(dom)
-//           const chapter = {
-//             title: chapterTitle,
-//             data: chapterContent
-//           }
-//           allChapters.push(chapter)
-//         }
-//       })
-//       .catch(error => {
-//         console.error(error);
-//       });
-//     }
-//   // }
-//   return {
-//     chapters: allChapters,
-//     storyTitle: storyTitle
-//   }
-// }
-
-const getHostFromUrl = (url: string) => {
-  const urlParts = url.split('/')
-  return urlParts[2]
-}
-
 export const generateEpubTruyenFull = async (url: string) => {
-  const hostWebsite = getHostFromUrl(url)
-  let outputStoryName = ''
-  if (hostWebsite === TRUYENFULL_IO_HOST || hostWebsite === TRUYENF_COM_HOST) {
-    const urlParts = url.split('/')
-    outputStoryName = urlParts[3]
-  }
-
+  const { hostWebsite, outputStoryName, author } = await extractStoryInforFromUrl(url)
   const allChapters: ITruyenFullChapter[] = []
   let storyTitle: string | null = ''
 
   let readlingChapterNo = 1
   let endReading = false
-  do {
-    const finalUrl = url + readlingChapterNo + POST_FIX_URL // https://truyenf.com
-    // const finalUrl = url + readlingChapterNo   // https://truyenfull.io
 
+  do {
+    const finalUrl = getChapterUrl(hostWebsite, url, readlingChapterNo)
+    console.log('------------- finalUrl: ', finalUrl)
+
+    if (!finalUrl) {
+      console.error(`!!! Not found ${finalUrl} !!!\n`)
+      endReading = true
+    }
 
     await axios
       .get(finalUrl)
@@ -160,7 +106,8 @@ export const generateEpubTruyenFull = async (url: string) => {
   return {
     chapters: allChapters,
     storyTitle: storyTitle,
-    outputStoryName: './' + outputStoryName + '.epub'
+    outputStoryName: './' + outputStoryName + '.epub',
+    author
   }
 }
 
