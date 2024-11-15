@@ -96,9 +96,17 @@ export const generateEpubTruyenFull = async (url: string) => {
       })
       .catch((error: any) => {
         console.error(error);
-        endReading = true
+        if (error.response && error.response.status === 503) {
+          readlingChapterNo--
+          return
+        } else {
+          endReading = true
+        }
       });
     
+    if (readlingChapterNo > 252) {
+      break
+    }
     
     readlingChapterNo++
   } while (endReading === false)
