@@ -1,6 +1,6 @@
 const http = require('http');
 import EPub from 'epub-gen';
-import { generateEpubTruyenFull } from './readContent'
+import { readContent } from './readContent'
 
 const hostname = '127.0.0.1';
 const port = 3000;
@@ -283,7 +283,8 @@ const finalizeEpub = async () => {
   const urlToDownload = processUrl()
 
   console.log('\n*********************** START ***********************\n')
-  const myBookChapters = await generateEpubTruyenFull(urlToDownload)
+  
+  const myBookChapters = await readContent(urlToDownload)
 
   const myBook = {
     title: myBookChapters.storyTitle ?? book.title,
@@ -295,7 +296,7 @@ const finalizeEpub = async () => {
   new EPub(myBook).promise.then(() => console.log('\n*********************** DONE ***********************\n'));
 }
 
-server.listen(port, hostname, () => {
+server.listen(port, hostname, async() => {
   console.log(`Server running at http://${hostname}:${port}/`);
   finalizeEpub()
 });

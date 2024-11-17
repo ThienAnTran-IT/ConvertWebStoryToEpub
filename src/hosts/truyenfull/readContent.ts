@@ -6,7 +6,8 @@ import {
   CHAPTER_TITLE_CLASSNAME
 } from './constants'
 import { ITruyenFullChapter } from './types'
-import { extractStoryInforFromUrl, getChapterUrl } from '../../utils'
+import { getChapterUrl } from '../../utils'
+import { EpubOutput, IBasicStoryInfoRequest } from '../../types'
 
 // const generateEpub = async (url, chaptersNo) => {
 //   const allChapters = []
@@ -54,8 +55,8 @@ const getChapperContentInTruyenFull = (dom: Document) => {
   return dom.getElementsByClassName(CHAPTER_CONTENT_CLASSNAME)[0].textContent?.replace(/\n/g, "<br />");
 }
 
-export const generateEpubTruyenFull = async (url: string) => {
-  const { hostWebsite, outputStoryName, author } = await extractStoryInforFromUrl(url)
+export const generateEpubTruyenFull = async (url: string, request: IBasicStoryInfoRequest): Promise<EpubOutput> => {
+  const { hostWebsite, outputStoryName, author } = request
   const allChapters: ITruyenFullChapter[] = []
   let storyTitle: string | null = ''
 
@@ -115,8 +116,6 @@ export const generateEpubTruyenFull = async (url: string) => {
     chapters: allChapters,
     storyTitle: storyTitle,
     outputStoryName: './' + outputStoryName + '.epub',
-    author
+    author: author ?? 'unknown'
   }
 }
-
-// module.exports = { generateEpub: generateEpubTruyenFull, generateEpubTruyenFull }
