@@ -1,13 +1,11 @@
-
-
 const http = require('http');
-const readContentFunc = require('./src/readContent')
-const epub = require('epub-gen');
+import EPub from 'epub-gen';
+import { generateEpubTruyenFull } from './readContent'
 
 const hostname = '127.0.0.1';
 const port = 3000;
 
-const server = http.createServer((req, res) => {
+const server = http.createServer((_req: any, res: { statusCode: number; setHeader: (arg0: string, arg1: string) => void; end: (arg0: string) => void; }) => {
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/plain');
   res.end('Hello World');
@@ -248,39 +246,56 @@ const tempChaps = [
   },
 ]
 
+// const book = {
+//   title: 'Thiên kim là lão đại toàn năng',
+//   author: 'Khanh Thiển',
+//   startChapter: 1,
+//   endChapter: 5538008,
+//   // chaptersNo: tempChaps,
+//   // url: 'https://ntruyen.vn/truyen/that-thien-kim-la-toan-nang-dai-lao-34879/5537943.html',
+//   url: 'https://truyenf.com/bien-hinh-ky/chuong-1.html',
+//   outputName: './thien-kim-la-lao-dai-toan-nang.epub',    //Get name from html
+//   postFixType: '.epub'
+// }
 const book = {
-  title: 'Thiên kim là lão đại toàn năng',
-  author: 'Khanh Thiển',
-  // startChapter: 5537944,
-  // endChapter: 5538008,
-  chaptersNo: tempChaps,
-  url: 'https://ntruyen.vn/truyen/that-thien-kim-la-toan-nang-dai-lao-34879/5537943.html',
-  outputName: './thien-kim-la-lao-dai-toan-nang.epub',
-  postFixType: '.epub'
+  title: 'Ta Là Nữ Đầu Bếp Ở Tửu Lâu',
+  author: 'Linh Te',
+  startChapter: 1,
+  endChapter: 8,
+  // chaptersNo: tempChaps,
+  // url: 'https://ntruyen.vn/truyen/that-thien-kim-la-toan-nang-dai-lao-34879/5537943.html',
+  // url: 'https://truyenf.com/the-tu-phu-nhan/chuong-',
+  url: 'https://truyenf.com/ta-la-nu-dau-bep-o-tuu-lau/chuong-'
 }
 // const url = 'https://ztruyen.vn/truyen/nghich-thien-than-phi-toi-thuong-39863/9451288'
 
-const finalizeEpub = async () => {
-  // const myBookChapters = await readContentFunc.generateEpub(book.url, book.startChapter, book.endChapter)
-  const myBookChapters = await readContentFunc.generateEpub(book.url, book.chaptersNo)
-  const myBook = {
-    title: book.title,
-    author: book.author,
-    output: book.outputName,
-    content: myBookChapters
+const processUrl = () => {
+  const args = process.argv.slice(2)
+  const urlToDownload = args[0]
+  if (!urlToDownload) {
+    console.log( 'We need the url to download. PLease try again!')
+    throw new Error('We need the url to download. PLease try again!')
   }
-  new epub(myBook).promise.then(() => console.log('An Done'));
+  return urlToDownload
 }
-finalizeEpub()
+
+const finalizeEpub = async () => {
+  const urlToDownload = processUrl()
+
+  console.log('\n*********************** START ***********************\n')
+  const myBookChapters = await generateEpubTruyenFull(urlToDownload)
+
+  const myBook = {
+    title: myBookChapters.storyTitle ?? book.title,
+    author: myBookChapters.author,
+    output: myBookChapters.outputStoryName ?? 'Default story name',
+    content: myBookChapters.chapters
+  }
+
+  new EPub(myBook).promise.then(() => console.log('\n*********************** DONE ***********************\n'));
+}
 
 server.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
+  finalizeEpub()
 });
-
-
-// 5566921-5566929, 5615099-5615102, 5630757-5630760, 5716992-5716997, 5750094-5750097, 5771855-5771858, 5827427-5827432, 5836616-5836617, 5860592-5860595, 5863920-5863921, 5907190-5907204, 
-// 5932051-5932052, 5932270-5932271, 5968457-5968458, 6044003-6044013, 6068160-6068161, 6077187-6077188, 6089086-6089087, 6112721-6112726, 6129212-6129213, 6134661-6134662, 6150083-6150084, 
-// 6168277-6168278, 6225707-6225712, 6237597-6237598, 6261234-6261237, 6277587-6277588, 6346851-6346856, 6355631-6355632, 6378711-6378713, 6445416-6445425, 6450826-6450829
-// 6456808-6456809, 6512677-6512682, 6545812-6545815, 6548379-6548380, 6648475-6648484, 6746677-6746691, 6765706-6765707, 6775159-6775160, 6788307-6788308, 6801912-6801913
-// 6851533-6851540, 6865739-6865740, 6882060-6882061, 6882536-6882539, 6922334-6922340, 6926791-6926792, 6942550-6942552, 6955734-6955734, 7008256-7008263, 7009170-7009171
-// 7053414-7053415, 7163677-7163681, 7585389-7585409, 8820030-8820044

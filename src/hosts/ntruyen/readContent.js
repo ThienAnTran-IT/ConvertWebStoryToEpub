@@ -69,7 +69,7 @@ const getUrlByChapter = (url, chapterNo) => {
 //   return allChapters
 // }
 
-const generateEpub = async (url, chaptersNo) => {
+const generateEpubForNTruyen = async (url, chaptersNo) => {
   const allChapters = []
   for (j = 0; j < chaptersNo.length; j++) {
     const startChap = chaptersNo[j].startChapter
@@ -103,4 +103,4 @@ const generateEpub = async (url, chaptersNo) => {
   return allChapters
 }
 
-module.exports = { generateEpub }
+module.exports = { generateEpub: generateEpubForNTruyen }
