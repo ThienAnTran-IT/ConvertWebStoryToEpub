@@ -15,4 +15,5 @@ export interface IBasicStoryInfoRequest {
   hostWebsite: string, 
   outputStoryName: string,
   author: string
+  storyTitle?: string
 }

@@ -25,6 +25,8 @@ const getStoryNameFromUrlNameByHost = (url: string, hostWebsite: string) => {
       return url.split('/')[3]
     case HOSTS.N_TRUYEN:
       return url.split('/')[4]
+    case HOSTS.D_TRUYEN_NET:
+      return url.split('/')[3]
     default:
       return ''
   }
@@ -32,58 +34,61 @@ const getStoryNameFromUrlNameByHost = (url: string, hostWebsite: string) => {
 
 //TODO: Move this funciton to truyenfull space
 const getAuthorNameTruyenFull = async (url: string) => {
-  console.log('--- START getAuthorNameTruyenFull ----- ', url)
-  // const author = await axios
-  //   .get(url)
-  //   .then((res: any) => {
-  //     console.log('--- res: ', res)
-  //     if (res.status === 200 && res.data) {
-  //       console.log('--- res success: ', res)
-  //       const htmlRaw = res.data.replaceAll(/<br\s*[\/]?>/gi, "\n")
-  //       const dom = new JSDOM(htmlRaw).window.document
-  //       console.log('\n\n--- dom: ', dom)
-  //       console.log('\n\n\n')
-  //       return dom.querySelector('a[itemprop=author]')?.textContent ?? 'unknown'  
-  //     }
-  //     else {
-  //       return 'unknown'
-  //     }
-  //   })
-  //   .catch((error: any) => {
-  //     console.log('--- ERROR: ', error)
-  //     console.error(error)
-  //     return new Error(error)
-  //   });
   const res = await axios.get(url)
-  console.log('--- res: ', res)
   const author = await axios
     .get(url)
     .then((res: any) => {
-      console.log('--- res 2: ', res)
-      // if (res.status === 200 && res.data) {
-      //   console.log('--- res success: ', res)
-      //   const htmlRaw = res.data.replaceAll(/<br\s*[\/]?>/gi, "\n")
-      //   const dom = new JSDOM(htmlRaw).window.document
-      //   console.log('\n\n--- dom: ', dom)
-      //   console.log('\n\n\n')
-      //   return dom.querySelector('a[itemprop=author]')?.textContent ?? 'unknown'  
-      // }
-      // else {
-      //   return 'unknown'
-      // }
+      if (res.status === 200 && res.data) {
+        const htmlRaw = res.data.replaceAll(/<br\s*[\/]?>/gi, "\n")
+        const dom = new JSDOM(htmlRaw).window.document
+        return dom.querySelector('a[itemprop=author]')?.textContent ?? 'unknown'  
+      }
+      else {
+        return 'unknown'
+      }
     })
     .catch((error: any) => {
-      console.log('--- ERROR: ', error)
-      console.error(error)
+      console.log('--- ERROR get Author name: ', error)
       return new Error(error)
     });
   console.log('--- author: ', author)
   return author?.toString()
 }
 
+const getAuthorNameDTruyenNet = async (url: string) => {
+  const res = await axios.get(url)
+  const author = await axios
+    .get(url)
+    .then((res: any) => {
+      if (res.status === 200 && res.data) {
+        const htmlRaw = res.data.replaceAll(/<br\s*[\/]?>/gi, "\n")
+        const dom = new JSDOM(htmlRaw).window.document
+        const elementsByIconClass = dom.getElementsByClassName('fa-user')
+        let index = 0
+        let authorName: string | null | undefined = 'unknown'
+        do {
+          const currentElementNodename = elementsByIconClass[index].parentElement?.nodeName
+          if (currentElementNodename === 'P') {
+            console.log(elementsByIconClass[index].parentElement?.textContent)
+            authorName = elementsByIconClass[index].parentElement?.textContent
+            break
+          }
+          index++
+        } while (index < elementsByIconClass.length)
+        return authorName?.trim()
+      }
+      else {
+        return 'unknown'
+      }
+    })
+    .catch((error: any) => {
+      console.log('--- ERROR get Author name: ', error)
+      return new Error(error)
+    });
+  return author?.toString()
+}
+
 const getAuthorFromUrlNameByHost = async (url: string, hostWebsite: string) => {
-  console.log('\n\n--- url: ', url)
-  console.log('--- hostWebsite: ', hostWebsite)
   switch (hostWebsite) {
     case HOSTS.TRUYENFULL_IO:
       console.log('--- TRUYENFULL_IO: ')
@@ -94,6 +99,8 @@ const getAuthorFromUrlNameByHost = async (url: string, hostWebsite: string) => {
       return await getAuthorNameTruyenFull(url)
     case HOSTS.N_TRUYEN:
       return 'unknown'    //TODO: Handle later
+    case HOSTS.D_TRUYEN_NET:
+      return await getAuthorNameDTruyenNet(url)
     default:
       return ''
   }
@@ -101,11 +108,7 @@ const getAuthorFromUrlNameByHost = async (url: string, hostWebsite: string) => {
 
 export const extractStoryInforFromUrl = async (url: string): Promise<IBasicStoryInfoRequest> => {
   const hostWebsite = getHostFromUrl(url)
-  // console.log('--- hostWebsite: ', hostWebsite)
-
   const outputStoryName = getStoryNameFromUrlNameByHost(url, hostWebsite)
-  console.log('--- outputStoryName: ', outputStoryName)
-
   const author = await getAuthorFromUrlNameByHost(url, hostWebsite)
   
   return {

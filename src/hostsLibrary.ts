@@ -7,4 +7,5 @@ export enum HOSTS {
   TRUYENFULL_VN = "truyenfull.vn",
   TRUYENFULL_IO = "truyenfull.io",
   TRUYENF_COM = "truyenf.com",
+  D_TRUYEN_NET = "dtruyen.net",
 }
