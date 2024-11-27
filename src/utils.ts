@@ -56,7 +56,6 @@ const getAuthorNameTruyenFull = async (url: string) => {
 }
 
 const getAuthorNameDTruyenNet = async (url: string) => {
-  const res = await axios.get(url)
   const author = await axios
     .get(url)
     .then((res: any) => {
