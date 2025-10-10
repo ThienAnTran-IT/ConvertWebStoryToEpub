@@ -12,12 +12,18 @@ import { generateEpubDTruyenNet } from './hosts/dtruyen_net/readContent'
 import { IBasicStoryInfoRequest, EpubOutput } from './types'
 import { HOSTS } from './hostsLibrary'
 
-export const readContent = async (url: string): Promise<EpubOutput>  => {
-  const request = await extractStoryInforFromUrl(url)
+export const readContent = async (url: string, startChap?: number, endChap?: number): Promise<EpubOutput>  => {
+  const request: IBasicStoryInfoRequest = {
+    ...(await extractStoryInforFromUrl(url)),
+    startChapterNo: startChap,
+    endChapterNo: endChap
+  }
   const { hostWebsite } = request
   console.log('--- hostWebsite done: ', request)
   switch (hostWebsite) {
     case HOSTS.TRUYENFULL_IO:
+      return await generateEpubTruyenFull(url, request)
+    case HOSTS.TRUYENFULL_BIO:
       return await generateEpubTruyenFull(url, request)
     case HOSTS.TRUYENF_COM:
       return await generateEpubTruyenFull(url, request)

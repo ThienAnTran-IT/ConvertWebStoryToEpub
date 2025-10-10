@@ -5,7 +5,8 @@ import { HOSTS} from "./hostsLibrary"
 import {
   POST_FIX_URL,
   TRUYENFULL_IO_HOST,
-  TRUYENF_COM_HOST
+  TRUYENF_COM_HOST,
+  TRUYENFULL_BIO_HOST
 } from "./hosts/truyenfull/constants"
 import { IBasicStoryInfoRequest } from './types'
 
@@ -22,6 +23,8 @@ const getStoryNameFromUrlNameByHost = (url: string, hostWebsite: string) => {
     case HOSTS.TRUYENFULL_VN:
       return url.split('/')[3]
     case HOSTS.TRUYENF_COM:
+      return url.split('/')[3]
+    case HOSTS.TRUYENFULL_BIO:
       return url.split('/')[3]
     case HOSTS.N_TRUYEN:
       return url.split('/')[4]
@@ -96,6 +99,9 @@ const getAuthorFromUrlNameByHost = async (url: string, hostWebsite: string) => {
       return await getAuthorNameTruyenFull(url)
     case HOSTS.TRUYENF_COM:
       return await getAuthorNameTruyenFull(url)
+    case HOSTS.TRUYENFULL_BIO:
+      console.log('--- TRUYENFULL_BIO: ')
+      return await getAuthorNameTruyenFull(url)
     case HOSTS.N_TRUYEN:
       return 'unknown'    //TODO: Handle later
     case HOSTS.D_TRUYEN_NET:
@@ -121,6 +127,8 @@ export const extractStoryInforFromUrl = async (url: string): Promise<IBasicStory
 export const getChapterUrl = (host:string, originalUrl: string, chapterNo: number) => {
   switch (host) {
     case TRUYENFULL_IO_HOST:
+      return originalUrl + 'chuong-' + chapterNo
+    case TRUYENFULL_BIO_HOST:
       return originalUrl + 'chuong-' + chapterNo
     case TRUYENF_COM_HOST:
       return originalUrl + 'chuong-' + chapterNo + POST_FIX_URL   //TODO: Not correct

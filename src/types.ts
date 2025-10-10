@@ -16,4 +16,6 @@ export interface IBasicStoryInfoRequest {
   outputStoryName: string,
   author: string
   storyTitle?: string
+  startChapterNo?: number
+  endChapterNo?: number
 }

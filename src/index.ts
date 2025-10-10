@@ -272,19 +272,27 @@ const book = {
 const processUrl = () => {
   const args = process.argv.slice(2)
   const urlToDownload = args[0]
+  const startChapter = (args[1] && !isNaN(Number(args[1]))) ? Number(args[1]) : undefined
+  const endChapter = (args[2] && !isNaN(Number(args[2]))) ? Number(args[2]) : undefined
+
   if (!urlToDownload) {
     console.log( 'We need the url to download. PLease try again!')
     throw new Error('We need the url to download. PLease try again!')
   }
-  return urlToDownload
+
+  return {
+    urlToDownload,
+    startChapter,
+    endChapter
+  }
 }
 
 const finalizeEpub = async () => {
-  const urlToDownload = processUrl()
+  const { urlToDownload, startChapter, endChapter } = processUrl()
 
   console.log('\n*********************** START ***********************\n')
   
-  const myBookChapters = await readContent(urlToDownload)
+  const myBookChapters = await readContent(urlToDownload, startChapter, endChapter)
 
   const myBook = {
     title: myBookChapters.storyTitle ?? book.title,
