@@ -40,6 +40,7 @@ export const generateEpubTruyenFull = async (url: string, request: IBasicStoryIn
   let endReading = false
 
   do {
+  
     const finalUrl = getChapterUrl(hostWebsite, url, firstChapterRead)
     console.log('------------- finalUrl: ', finalUrl)
 
@@ -65,7 +66,8 @@ export const generateEpubTruyenFull = async (url: string, request: IBasicStoryIn
           } catch (error) {
             console.error('!!! ERROR !!!\n')
             console.error(error)
-            endReading = true
+            return
+            // endReading = true
           }
         }
       })

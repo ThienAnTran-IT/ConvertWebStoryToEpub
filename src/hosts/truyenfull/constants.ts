@@ -6,6 +6,6 @@ export const STORY_TITLE_CLASSNAME = 'truyen-title'
 export const CHAPTER_TITLE_CLASSNAME = 'chapter-title'
 export const CHAPTER_CONTENT_CLASSNAME = 'chapter-c'
 export const POST_FIX_URL = '.html'
-export const DEFAULT_END_CHAPTER_READ = 900
+export const DEFAULT_END_CHAPTER_READ = 1300
 export const DEFAULT_START_CHAPTER_READ = 1
 

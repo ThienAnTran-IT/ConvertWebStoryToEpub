@@ -37,7 +37,6 @@ const getStoryNameFromUrlNameByHost = (url: string, hostWebsite: string) => {
 
 //TODO: Move this funciton to truyenfull space
 const getAuthorNameTruyenFull = async (url: string) => {
-  const res = await axios.get(url)
   const author = await axios
     .get(url)
     .then((res: any) => {
