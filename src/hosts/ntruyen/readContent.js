@@ -40,34 +40,6 @@ const getUrlByChapter = (url, chapterNo) => {
   return finalUrl
 }
 
-// const generateEpub = async (url, startChapter, endChapter) => {
-//   const allChapters = []
-//   for (i = startChapter; i <= endChapter; i++) {
-//     const finalUrl = getUrlByChapter(url, i)
-
-//   await axios
-//     .get(finalUrl)
-//     .then(res => {
-//       if (res.status === 200 && res.data) {
-//         htmlRaw = res.data
-//         const chapterInfo = getChapterInfo(htmlRaw, '<div class="chapter-infos">', '<div class="chapter-direction bot">')
-//         const chapterContent = getChapterContent(chapterInfo, '<div id="chapter-content">', ' </div>')
-//         const chapterHeader = getChapterContent(chapterInfo, '<h1>', '</h1>')
-  
-//         const chapter = {
-//           title: chapterHeader,
-//           data: chapterContent
-//         }
-//         allChapters.push(chapter)
-//       }
-//     })
-//     .catch(error => {
-//       console.error(error);
-//     });
-//   }
-
-//   return allChapters
-// }
 
 const generateEpubForNTruyen = async (url, chaptersNo) => {
   const allChapters = []

@@ -3,44 +3,13 @@ import { JSDOM } from 'jsdom'
 import {
   STORY_TITLE_CLASSNAME,
   CHAPTER_CONTENT_CLASSNAME,
-  CHAPTER_TITLE_CLASSNAME
+  CHAPTER_TITLE_CLASSNAME,
+  DEFAULT_START_CHAPTER_READ, 
+  DEFAULT_END_CHAPTER_READ
 } from './constants'
 import { ITruyenFullChapter } from './types'
-import { extractStoryInforFromUrl, getChapterUrl } from '../../utils'
-
-// const generateEpub = async (url, chaptersNo) => {
-//   const allChapters = []
-//   for (j = 0; j < chaptersNo.length; j++) {
-//     const startChap = chaptersNo[j].startChapter
-//     const endChap = chaptersNo[j].endChapter
-//     console.log('------------- startChap: ', startChap)
-//     console.log('------------- endChap: ', endChap)
-//     for (i = startChap; i <= endChap; i++) {
-//       const finalUrl = getUrlByChapter(url, i)
-  
-//     await axios
-//       .get(finalUrl)
-//       .then(res => {
-//         if (res.status === 200 && res.data) {
-//           htmlRaw = res.data
-//           const chapterInfo = getChapterInfo(htmlRaw, '<div class="chapter-infos">', '<div class="chapter-direction bot">')
-//           const chapterContent = getChapterContent(chapterInfo, '<div id="chapter-content">', ' </div>')
-//           const chapterHeader = getChapterContent(chapterInfo, '<h1>', '</h1>')
-    
-//           const chapter = {
-//             title: chapterHeader,
-//             data: chapterContent
-//           }
-//           allChapters.push(chapter)
-//         }
-//       })
-//       .catch(error => {
-//         console.error(error);
-//       });
-//     }
-//   }
-//   return allChapters
-// }
+import { getChapterUrl } from '../../utils'
+import { EpubOutput, IBasicStoryInfoRequest } from '../../types'
 
 const getStoryTitleInTruyenFull = (dom: Document) => {
   return dom.getElementsByClassName(STORY_TITLE_CLASSNAME)[0].textContent
@@ -51,19 +20,28 @@ const getChapperTitleInTruyenFull = (dom: Document) => {
 }
 
 const getChapperContentInTruyenFull = (dom: Document) => {
-  return dom.getElementsByClassName(CHAPTER_CONTENT_CLASSNAME)[0].textContent?.replace(/\n/g, "<br />");
+  return dom.getElementsByClassName(CHAPTER_CONTENT_CLASSNAME)[0].textContent?.replace(/\n/g, "<br />")
 }
 
-export const generateEpubTruyenFull = async (url: string) => {
-  const { hostWebsite, outputStoryName, author } = await extractStoryInforFromUrl(url)
+const handleDOMResponse = (res: any) => {
+  const htmlRaw = res.data.replaceAll(/<br\s*[\/]?>/gi, "\n").replaceAll(`<br class="html-br" />`, "\n").replace(/<\/p>/g, '</p>\n\n')
+  return new JSDOM(htmlRaw).window.document
+}
+
+export const generateEpubTruyenFull = async (url: string, request: IBasicStoryInfoRequest): Promise<EpubOutput> => {
+  const { hostWebsite, outputStoryName, author, startChapterNo, endChapterNo } = request
+  console.log('------- request: ', request)
+  console.log('------- url: ', url)
   const allChapters: ITruyenFullChapter[] = []
   let storyTitle: string | null = ''
 
-  let readlingChapterNo = 1
+  let firstChapterRead = startChapterNo ?? DEFAULT_START_CHAPTER_READ
+  let endChapterRead = endChapterNo ?? DEFAULT_END_CHAPTER_READ
   let endReading = false
 
   do {
-    const finalUrl = getChapterUrl(hostWebsite, url, readlingChapterNo)
+  
+    const finalUrl = getChapterUrl(hostWebsite, url, firstChapterRead)
     console.log('------------- finalUrl: ', finalUrl)
 
     if (!finalUrl) {
@@ -75,9 +53,7 @@ export const generateEpubTruyenFull = async (url: string) => {
       .get(finalUrl)
       .then((res: any) => {
         if (res.status === 200 && res.data) {
-          const htmlRaw = res.data.replaceAll(/<br\s*[\/]?>/gi, "\n")
-          const dom = new JSDOM(htmlRaw).window.document
-
+          const dom = handleDOMResponse(res)
           try {
             storyTitle = getStoryTitleInTruyenFull(dom)
             const chapterTitle = getChapperTitleInTruyenFull(dom)
@@ -88,35 +64,36 @@ export const generateEpubTruyenFull = async (url: string) => {
             }
             allChapters.push(chapter)
           } catch (error) {
-            console.error('!!! ERROR !!!\n', error)
-            endReading = true
+            console.error('!!! ERROR !!!\n')
+            console.error(error)
+            return
+            // endReading = true
           }
-          
         }
       })
       .catch((error: any) => {
-        console.error(error);
+        console.error('!!! OUTSIDE ERROR !!!\n')
+        console.error(error)
         if (error.response && error.response.status === 503) {
-          readlingChapterNo--
+          firstChapterRead--
           return
         } else {
           endReading = true
         }
       });
-    
-    if (readlingChapterNo > 252) {
+
+    if (firstChapterRead === endChapterRead) {
+      endReading = true
       break
     }
-    
-    readlingChapterNo++
+
+    firstChapterRead++
   } while (endReading === false)
 
   return {
     chapters: allChapters,
     storyTitle: storyTitle,
     outputStoryName: './' + outputStoryName + '.epub',
-    author
+    author: author ?? 'unknown'
   }
 }
-
-// module.exports = { generateEpub: generateEpubTruyenFull, generateEpubTruyenFull }
