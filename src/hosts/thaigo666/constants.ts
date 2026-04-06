@@ -1,0 +1,5 @@
+export const STORY_TITLE_SELECTOR = 'h1'
+export const ENTRY_CONTENT_CLASS = 'entry-content'
+export const CHAPTER_TITLE_SELECTOR = 'h1.post-title'
+export const CHAPTER_CONTENT_CLASS = 'post-content'
+export const AUTHOR_LABEL = 'Tác giả:'

@@ -10,4 +10,5 @@ export enum HOSTS {
   TRUYENFULL_BIO = "truyenfull.vision",
   TRUYENF_COM = "truyenf.com",
   D_TRUYEN_NET = "dtruyen.net",
+  THAIGO666_COM = "thaigo666.com",
 }

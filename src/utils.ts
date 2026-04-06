@@ -30,6 +30,8 @@ const getStoryNameFromUrlNameByHost = (url: string, hostWebsite: string) => {
       return url.split('/')[4]
     case HOSTS.D_TRUYEN_NET:
       return url.split('/')[3]
+    case HOSTS.THAIGO666_COM:
+      return url.split('/')[3]
     default:
       return ''
   }
@@ -105,6 +107,8 @@ const getAuthorFromUrlNameByHost = async (url: string, hostWebsite: string) => {
       return 'unknown'    //TODO: Handle later
     case HOSTS.D_TRUYEN_NET:
       return await getAuthorNameDTruyenNet(url)
+    case HOSTS.THAIGO666_COM:
+      return 'unknown'  // overridden by generateEpubThaigo666 from index page
     default:
       return ''
   }
