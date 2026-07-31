@@ -45,7 +45,7 @@ const finalizeEpub = async () => {
   const myBookChapters = await readContent(urlToDownload, startChapter, endChapter)
 
   const myBook = {
-    title: myBookChapters.storyTitle ?? book.title,
+    title: myBookChapters.storyTitle || book.title,
     author: myBookChapters.author,
     output: myBookChapters.outputStoryName ?? 'Default story name',
     content: myBookChapters.chapters
