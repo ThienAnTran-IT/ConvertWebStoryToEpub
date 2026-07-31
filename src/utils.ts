@@ -6,7 +6,9 @@ import {
   POST_FIX_URL,
   TRUYENFULL_IO_HOST,
   TRUYENF_COM_HOST,
-  TRUYENFULL_BIO_HOST
+  TRUYENFULL_BIO_HOST,
+  TRUYENFULL_TODAY_HOST,
+  TRUYENFULL_LIVE_HOST
 } from "./hosts/truyenfull/constants"
 import { IBasicStoryInfoRequest } from './types'
 
@@ -25,6 +27,8 @@ const getStoryNameFromUrlNameByHost = (url: string, hostWebsite: string) => {
     case HOSTS.TRUYENF_COM:
       return url.split('/')[3]
     case HOSTS.TRUYENFULL_BIO:
+    case HOSTS.TRUYENFULL_TODAY:
+    case HOSTS.TRUYENFULL_LIVE:
       return url.split('/')[3]
     case HOSTS.N_TRUYEN:
       return url.split('/')[4]
@@ -101,6 +105,8 @@ const getAuthorFromUrlNameByHost = async (url: string, hostWebsite: string) => {
     case HOSTS.TRUYENF_COM:
       return await getAuthorNameTruyenFull(url)
     case HOSTS.TRUYENFULL_BIO:
+    case HOSTS.TRUYENFULL_TODAY:
+    case HOSTS.TRUYENFULL_LIVE:
       console.log('--- TRUYENFULL_BIO: ')
       return await getAuthorNameTruyenFull(url)
     case HOSTS.N_TRUYEN:
@@ -132,6 +138,8 @@ export const getChapterUrl = (host:string, originalUrl: string, chapterNo: numbe
     case TRUYENFULL_IO_HOST:
       return originalUrl + 'chuong-' + chapterNo
     case TRUYENFULL_BIO_HOST:
+    case TRUYENFULL_TODAY_HOST:
+    case TRUYENFULL_LIVE_HOST:
       return originalUrl + 'chuong-' + chapterNo
     case TRUYENF_COM_HOST:
       return originalUrl + 'chuong-' + chapterNo + POST_FIX_URL   //TODO: Not correct

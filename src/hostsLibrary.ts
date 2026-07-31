@@ -8,6 +8,8 @@ export enum HOSTS {
   TRUYENFULL_IO = "truyenfull.io",
   // TRUYENFULL_BIO = "truyenfull.bio",
   TRUYENFULL_BIO = "truyenfull.vision",
+  TRUYENFULL_TODAY = "truyenfull.today",
+  TRUYENFULL_LIVE = "truyenfull.live",
   TRUYENF_COM = "truyenf.com",
   D_TRUYEN_NET = "dtruyen.net",
   THAIGO666_COM = "thaigo666.com",

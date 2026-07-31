@@ -25,6 +25,8 @@ export const readContent = async (url: string, startChap?: number, endChap?: num
     case HOSTS.TRUYENFULL_IO:
       return await generateEpubTruyenFull(url, request)
     case HOSTS.TRUYENFULL_BIO:
+    case HOSTS.TRUYENFULL_TODAY:
+    case HOSTS.TRUYENFULL_LIVE:
       return await generateEpubTruyenFull(url, request)
     case HOSTS.TRUYENF_COM:
       return await generateEpubTruyenFull(url, request)
